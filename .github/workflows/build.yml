@@ -3,7 +3,7 @@ name: Build Pyzbar for Android
 on:
   push:
     branches:
-      - main  # أو أي فرع تريد البناء عليه
+      - main  # أو أي فرع تريده للبناء
 
 jobs:
   build:
@@ -21,7 +21,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt  # إذا كان لديك ملف متطلبات
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "requirements.txt not found!"
+          fi
 
       - name: Clone Mobile Forge
         run: |
@@ -39,7 +43,7 @@ jobs:
           ls dist  # عرض الملفات في مجلد dist
 
       - name: Upload the wheel artifact
-        uses: actions/upload-artifact@v4  # تحديث النسخة إلى v4
+        uses: actions/upload-artifact@v4  # استخدام النسخة الأحدث
         with:
           name: pyzbar-wheel
           path: dist/*.whl  # تحميل ملف الحزمة المبنية
