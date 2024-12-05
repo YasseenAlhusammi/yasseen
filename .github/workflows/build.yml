@@ -1,0 +1,45 @@
+name: Build Pyzbar for Android
+
+on:
+  push:
+    branches:
+      - main  # أو أي فرع تريد البناء عليه
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # يمكنك اختيار نظام تشغيل آخر إذا لزم الأمر
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'  # استخدم الإصدار الذي تريده
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt  # إذا كان لديك ملف متطلبات
+
+      - name: Clone Mobile Forge
+        run: |
+          git clone https://github.com/YasseenAlhusammi/mobile-forge.git
+          cd mobile-forge
+          source ./setup-iOS.sh 3.11  # إعداد البيئة
+
+      - name: Build Pyzbar for Android
+        run: |
+          cd mobile-forge
+          forge android pyzbar  # بناء الحزمة للاندرويد
+
+      - name: Locate the built wheel
+        run: |
+          ls dist  # عرض الملفات في مجلد dist
+
+      - name: Upload the wheel artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: pyzbar-wheel
+          path: dist/*.whl  # تحميل ملف الحزمة المبنية
