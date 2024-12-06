@@ -32,6 +32,12 @@ jobs:
           echo "Running setup script for Android..."
           source ./setup-Android.sh || echo "Setup script for Android not found, manual setup may be required."
 
+      - name: Install Mobile Forge
+        run: |
+          echo "Installing mobile-forge..."
+          cd mobile-forge
+          pip install -e .
+
       - name: Build Pyzbar for Android
         run: |
           cd mobile-forge
