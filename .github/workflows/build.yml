@@ -22,15 +22,15 @@ jobs:
         run: |
           set -e
           pip install --upgrade pip
-          # إذا كان لديك أي حزم أخرى تحتاج إلى تثبيتها، أضفها هنا
-          # على سبيل المثال:
-          # pip install pyzbar
+          # تثبيت أي حزم أخرى تحتاجها
+          pip install pyzbar
 
       - name: Clone Mobile Forge
         run: |
           git clone https://github.com/YasseenAlhusammi/mobile-forge.git
           cd mobile-forge
-          source ./setup-iOS.sh 3.11
+          # استبدل هذا السكربت إذا كان هناك سكربت إعداد لـ Android
+          source ./setup-Android.sh || echo "Setup script for Android not found, manual setup may be required."
 
       - name: Build Pyzbar for Android
         run: |
