@@ -1,4 +1,4 @@
-name: Build Pyzbar for Android
+name: Build and Test Mobile App
 
 on:
   push:
@@ -11,67 +11,39 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v2
         with:
           python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          set -e
           pip install --upgrade pip
-          pip install pyzbar
+          pip install mobile-forge pyzbar
 
-      - name: Clone Mobile Forge
+      - name: Build the mobile app
         run: |
-          echo "Cloning mobile-forge repository..."
-          git clone https://github.com/YasseenAlhusammi/mobile-forge.git
-          cd mobile-forge
-          echo "Running setup script for Android..."
-          source ./setup-Android.sh || echo "Setup script for Android not found, manual setup may be required."
-
-      - name: Install Mobile Forge
-        run: |
-          echo "Installing mobile-forge..."
-          cd mobile-forge
-          pip install -e .
-
-      - name: Setup Git Authentication
-        run: |
-          echo "Setting up Git authentication..."
-          git config --global url."https://${{ secrets.GITHUB_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-          git config --global url."git@github.com:".insteadOf "https://${{ secrets.GITHUB_TOKEN }}@github.com/"
-
-      - name: Build Pyzbar for Android
-        run: |
-          cd mobile-forge
-          echo "Building Pyzbar for Android..."
-          forge android pyzbar
-
-      - name: Locate the built wheel
-        run: |
-          ls dist
-          if [ -z "$(ls -A dist)" ]; then
-            echo "No wheels found in dist!"
-            exit 1
-          fi
-
-      - name: Upload the wheel artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: pyzbar-wheel
-          path: dist/*.whl
+          echo "Building mobile app..."
+          forge android my_app  # استبدل 'my_app' باسم تطبيقك
 
       - name: Run tests
         run: |
-          echo "Installing the built wheel..."
-          pip install dist/*.whl
           echo "Running tests..."
-          if python -m unittest discover -s tests; then
-            echo "Tests passed!"
-          else
-            echo "Tests failed!"
+          python -m unittest discover -s tests  # تأكد من وجود اختبارات في مجلد 'tests'
+
+      - name: Locate the built APK
+        run: |
+          echo "Locating the built APK..."
+          ls dist
+          if [ -z "$(ls -A dist)" ]; then
+            echo "No APK found in dist!"
             exit 1
           fi
+
+      - name: Upload the APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: mobile-app-apk
+          path: dist/*.apk
