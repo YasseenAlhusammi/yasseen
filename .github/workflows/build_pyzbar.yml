@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install setuptools wheel buildozer
+          pip install setuptools wheel buildozer cython  # إضافة Cython
 
       - name: Create setup.py
         run: |
