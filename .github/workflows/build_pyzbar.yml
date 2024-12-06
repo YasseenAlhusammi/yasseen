@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install setuptools wheel buildozer cython  # إضافة Cython
+          pip install setuptools wheel buildozer cython
 
       - name: Create setup.py
         run: |
@@ -43,6 +43,11 @@ jobs:
           echo '[buildozer]' >> buildozer.spec
           echo 'log_level = 2' >> buildozer.spec
           echo 'warn_on_root = 1' >> buildozer.spec
+
+      - name: Accept Android SDK licenses
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager --update
 
       - name: Build the wheel
         run: |
