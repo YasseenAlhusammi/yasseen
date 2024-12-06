@@ -22,19 +22,20 @@ jobs:
         run: |
           set -e
           pip install --upgrade pip
-          # تثبيت أي حزم أخرى تحتاجها
           pip install pyzbar
 
       - name: Clone Mobile Forge
         run: |
           git clone https://github.com/YasseenAlhusammi/mobile-forge.git
           cd mobile-forge
-          # استبدل هذا السكربت إذا كان هناك سكربت إعداد لـ Android
-          source ./setup-Android.sh || echo "Setup script for Android not found, manual setup may be required."
+          # تثبيت Mobile Forge في البيئة الافتراضية
+          pip install -e .
 
       - name: Build Pyzbar for Android
         run: |
           cd mobile-forge
+          # تأكد من أن forge متاحة في البيئة
+          export PATH="$PATH:$(pwd)/src/forge"
           forge android pyzbar
 
       - name: Locate the built wheel
@@ -54,7 +55,6 @@ jobs:
       - name: Run tests
         run: |
           pip install dist/*.whl
-          # استبدل test.py بمسار الاختبار الخاص بك
           if python -m unittest discover -s tests; then
             echo "Tests passed!"
           else
