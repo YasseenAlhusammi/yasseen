@@ -20,20 +20,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          set -e  # اجعل السكربت يتوقف عند أي خطأ
+          set -e
           pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
-            echo "requirements.txt not found!"
-            exit 1
-          fi
+          # إذا كان لديك أي حزم أخرى تحتاج إلى تثبيتها، أضفها هنا
+          # على سبيل المثال:
+          # pip install pyzbar
 
       - name: Clone Mobile Forge
         run: |
           git clone https://github.com/YasseenAlhusammi/mobile-forge.git
           cd mobile-forge
-          source ./setup-iOS.sh 3.11  # تأكد من أن السكربت موجود في المسار الصحيح
+          source ./setup-iOS.sh 3.11
 
       - name: Build Pyzbar for Android
         run: |
