@@ -38,9 +38,11 @@ jobs:
           echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "export PATH=\$PATH:$HOME/android-sdk/tools/bin" >> $GITHUB_ENV
           echo "export PATH=\$PATH:$HOME/android-sdk/platform-tools" >> $GITHUB_ENV
-          yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses || true
-          yes | $HOME/android-sdk/tools/bin/sdkmanager --update || true
-          yes | $HOME/android-sdk/tools/bin/sdkmanager "platform-tools" "build-tools;30.0.3" || true
+
+          # Accept licenses and install build-tools
+          yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
+          yes | $HOME/android-sdk/tools/bin/sdkmanager --update
+          yes | $HOME/android-sdk/tools/bin/sdkmanager "platform-tools" "build-tools;30.0.3"
 
       - name: Create setup.py
         run: |
