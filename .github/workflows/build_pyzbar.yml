@@ -23,6 +23,18 @@ jobs:
           pip install --upgrade pip
           pip install setuptools wheel buildozer cython
 
+      - name: Install Android SDK
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip
+          wget https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
+          unzip sdk-tools-linux-3859397.zip -d $HOME/android-sdk
+          yes | $HOME/android-sdk/tools/bin/sdkmanager --licenses
+          $HOME/android-sdk/tools/bin/sdkmanager --update
+          echo "export ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "export PATH=$PATH:$HOME/android-sdk/tools/bin" >> $GITHUB_ENV
+          echo "export PATH=$PATH:$HOME/android-sdk/platform-tools" >> $GITHUB_ENV
+
       - name: Create setup.py
         run: |
           echo 'from setuptools import setup' > setup.py
@@ -43,11 +55,6 @@ jobs:
           echo '[buildozer]' >> buildozer.spec
           echo 'log_level = 2' >> buildozer.spec
           echo 'warn_on_root = 1' >> buildozer.spec
-
-      - name: Accept Android SDK licenses
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager --update
 
       - name: Build the wheel
         run: |
