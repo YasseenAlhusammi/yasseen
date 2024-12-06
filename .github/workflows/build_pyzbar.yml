@@ -1,0 +1,66 @@
+name: Build Pyzbar Wheel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install setuptools wheel buildozer
+
+      - name: Create setup.py
+        run: |
+          echo 'from setuptools import setup' > setup.py
+          echo 'setup(name="pyzbar", version="0.1", description="Python wrapper for zbar", packages=["pyzbar"], install_requires=["setuptools"] )' >> setup.py
+
+      - name: Create buildozer.spec
+        run: |
+          echo '[app]' > buildozer.spec
+          echo 'title = MyApp' >> buildozer.spec
+          echo 'package.name = myapp' >> buildozer.spec
+          echo 'package.domain = org.example' >> buildozer.spec
+          echo 'source.dir = .' >> buildozer.spec
+          echo 'source.include_exts = py,png,jpg,kv,atlas' >> buildozer.spec
+          echo 'version = 0.1' >> buildozer.spec
+          echo 'requirements = python3,kivy,pyzbar' >> buildozer.spec
+          echo 'orientation = portrait' >> buildozer.spec
+          echo 'android.permissions = INTERNET' >> buildozer.spec
+          echo '[buildozer]' >> buildozer.spec
+          echo 'log_level = 2' >> buildozer.spec
+          echo 'warn_on_root = 1' >> buildozer.spec
+
+      - name: Build the wheel
+        run: |
+          buildozer -v android debug
+          pip install wheel
+          python setup.py bdist_wheel
+
+      - name: Locate the built wheel
+        run: |
+          echo "Locating the built wheel..."
+          ls dist
+          if [ -z "$(ls -A dist)" ]; then
+            echo "No wheel found in dist!"
+            exit 1
+          fi
+
+      - name: Upload the wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyzbar-wheel
+          path: dist/*.whl
