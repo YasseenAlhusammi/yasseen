@@ -20,11 +20,13 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -e  # اجعل السكربت يتوقف عند أي خطأ
           pip install --upgrade pip
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           else
             echo "requirements.txt not found!"
+            exit 1
           fi
 
       - name: Clone Mobile Forge
@@ -41,9 +43,24 @@ jobs:
       - name: Locate the built wheel
         run: |
           ls dist
+          if [ -z "$(ls -A dist)" ]; then
+            echo "No wheels found in dist!"
+            exit 1
+          fi
 
       - name: Upload the wheel artifact
         uses: actions/upload-artifact@v4
         with:
           name: pyzbar-wheel
           path: dist/*.whl
+
+      - name: Run tests
+        run: |
+          pip install dist/*.whl
+          # استبدل test.py بمسار الاختبار الخاص بك
+          if python -m unittest discover -s tests; then
+            echo "Tests passed!"
+          else
+            echo "Tests failed!"
+            exit 1
+          fi
