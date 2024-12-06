@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.11'
 
@@ -26,16 +26,16 @@ jobs:
 
       - name: Clone Mobile Forge
         run: |
+          echo "Cloning mobile-forge repository..."
           git clone https://github.com/YasseenAlhusammi/mobile-forge.git
           cd mobile-forge
-          # تثبيت Mobile Forge في البيئة الافتراضية
-          pip install -e .
+          echo "Running setup script for Android..."
+          source ./setup-Android.sh || echo "Setup script for Android not found, manual setup may be required."
 
       - name: Build Pyzbar for Android
         run: |
           cd mobile-forge
-          # تأكد من أن forge متاحة في البيئة
-          export PATH="$PATH:$(pwd)/src/forge"
+          echo "Building Pyzbar for Android..."
           forge android pyzbar
 
       - name: Locate the built wheel
@@ -54,7 +54,9 @@ jobs:
 
       - name: Run tests
         run: |
+          echo "Installing the built wheel..."
           pip install dist/*.whl
+          echo "Running tests..."
           if python -m unittest discover -s tests; then
             echo "Tests passed!"
           else
