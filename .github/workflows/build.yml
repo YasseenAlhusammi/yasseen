@@ -21,7 +21,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install mobile-forge pyzbar
+          # تثبيت mobile-forge من GitHub
+          pip install git+https://github.com/YOUR_USERNAME/mobile-forge.git  # استبدل YOUR_USERNAME برقم المستخدم الخاص بك
 
       - name: Build the mobile app
         run: |
@@ -43,7 +44,7 @@ jobs:
           fi
 
       - name: Upload the APK artifact
-        uses: actions/upload-artifact@v4  # استخدام الإصدار v4
+        uses: actions/upload-artifact@v4
         with:
           name: mobile-app-apk
           path: dist/*.apk
