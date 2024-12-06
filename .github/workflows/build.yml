@@ -38,6 +38,12 @@ jobs:
           cd mobile-forge
           pip install -e .
 
+      - name: Setup Git Authentication
+        run: |
+          echo "Setting up Git authentication..."
+          git config --global url."https://${{ secrets.GITHUB_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+          git config --global url."git@github.com:".insteadOf "https://${{ secrets.GITHUB_TOKEN }}@github.com/"
+
       - name: Build Pyzbar for Android
         run: |
           cd mobile-forge
